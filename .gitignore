@@ -29,3 +29,19 @@ _ReSharper*/
 .vs/
 #Nuget packages folder
 packages/
+
+# Crawled developer documentation HTML (local reference only)
+docs/getting-started/
+docs/calculate-taxes/
+docs/calculate-taxes.html
+docs/calculating-tax-offline/
+docs/calculating-tax-offline.html
+docs/commit-uncommit/
+docs/commit-uncommit.html
+docs/customizing-transactions/
+docs/customizing-transactions.html
+docs/reference/
+docs/reference.html
+docs/index.html
+docs/afc-use-cases.html
+docs/faq.html
