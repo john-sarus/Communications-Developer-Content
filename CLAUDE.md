@@ -456,6 +456,72 @@ Use different `from` and `to` locations on line items for interstate/intercity c
 
 This project is hosted on GitLab at `git@gitlab.com:avalara3/comms-connector-poc.git`. Use the default SSH host `gitlab.com` which maps to the **JRSarusinc** work account (key: `~/.ssh/id_ed25519`). All git push/pull operations should use this SSH remote — do not use HTTPS or the personal `gitlab-personal` host alias.
 
+## Salesforce Metadata Deployment Rules
+
+Hard-won lessons from deploying the `ATC_Tax_Line__c` custom object. These apply to any Salesforce metadata work in this repo.
+
+### Field-Level Security (FLS) is NEVER auto-granted by Metadata API
+
+When you deploy new custom fields via `sf project deploy`, Salesforce does **not** automatically grant FLS to any profile — not even System Administrator. Optional fields (those without `<required>true</required>`) will be invisible in the Lightning UI because they return null to the browser, and Lightning hides null fields.
+
+**Every time you add a new optional custom field, you must also:**
+1. Add `fieldPermissions` to `salesforce_metadata/profiles/Admin.profile-meta.xml`
+2. Deploy the profile in the same operation
+
+Example entry to add for each field:
+```xml
+<fieldPermissions>
+    <editable>true</editable>
+    <field>ATC_Tax_Line__c.My_New_Field__c</field>
+    <readable>true</readable>
+</fieldPermissions>
+```
+
+Deploy both together:
+```bash
+sf project deploy start --metadata "CustomObject:ATC_Tax_Line__c" --metadata "Profile:Admin" -o john.romano@sarusinc.com.sf
+```
+
+**Required fields** (`<required>true</required>`) bypass FLS automatically and are always visible. Optional fields do not.
+
+### FlexiPage activation lives in the CustomObject, not the FlexiPage
+
+Activating a Lightning Record Page as org default is **not** done inside the FlexiPage XML. It lives in the CustomObject metadata as `<actionOverrides>`:
+
+```xml
+<!-- In salesforce_metadata/objects/MyObject__c/MyObject__c.object-meta.xml -->
+<actionOverrides>
+    <actionName>View</actionName>
+    <comment>Action override created by Lightning App Builder during activation.</comment>
+    <content>My_Record_Page</content>
+    <formFactor>Large</formFactor>
+    <skipRecordTypeSelect>false</skipRecordTypeSelect>
+    <type>Flexipage</type>
+</actionOverrides>
+```
+
+Deploy the FlexiPage and CustomObject together when activating:
+```bash
+sf project deploy start --metadata "FlexiPage:My_Record_Page" --metadata "CustomObject:MyObject__c" -o john.romano@sarusinc.com.sf
+```
+
+### Lightning browser cache vs. FLS changes
+
+Hard refresh (`Ctrl+F5`) does **not** clear Salesforce's Lightning component cache. After granting new FLS permissions, users must log out and back in (or open an incognito window) to see the changes. The CLI/API will show the correct data immediately; only the browser session is stale.
+
+### `force:detailPanel` renders fields from the Page Layout
+
+The `force:detailPanel` component in a FlexiPage renders whatever fields are in the assigned Page Layout. If the Page Layout was never deployed to the org, the component falls back to showing only required fields and system fields. Always deploy the Layout alongside the FlexiPage.
+
+### Deployment checklist for a new custom object
+
+When deploying a new custom object with a Lightning Record Page, deploy these in order:
+
+1. `CustomObject` (object + all fields)
+2. `Layout` (page layout with fields arranged)
+3. `Profile:Admin` (FLS for all optional fields)
+4. `FlexiPage` + `CustomObject` together (FlexiPage components + actionOverrides activation)
+
 ## Architecture Notes
 
 - This is primarily a **documentation and SDK distribution repo**, not an application. Most code is auto-generated client libraries.
