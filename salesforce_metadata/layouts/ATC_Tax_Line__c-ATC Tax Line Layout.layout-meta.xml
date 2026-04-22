@@ -16,6 +16,10 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Readonly</behavior>
+                <field>Order_Line_Number__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
                 <field>Tax_Level__c</field>
             </layoutItems>
             <layoutItems>

@@ -8,6 +8,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>ATC_Tax_Line__c.Order_Line_Number__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>ATC_Tax_Line__c.Calc_Type__c</field>
         <readable>true</readable>
     </fieldPermissions>
