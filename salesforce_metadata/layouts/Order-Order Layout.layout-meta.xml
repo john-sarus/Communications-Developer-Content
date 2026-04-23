@@ -359,11 +359,11 @@
     <relatedLists>
         <fields>Order_Line_Number__c</fields>
         <fields>NAME</fields>
+        <fields>Amount__c</fields>
+        <fields>Rate__c</fields>
         <fields>Tax_Level__c</fields>
         <fields>Tax_Name__c</fields>
         <fields>Tax_Category__c</fields>
-        <fields>Amount__c</fields>
-        <fields>Rate__c</fields>
         <fields>Jurisdiction_State__c</fields>
         <fields>Jurisdiction_County__c</fields>
         <fields>Jurisdiction_City__c</fields>
