@@ -524,8 +524,9 @@ public with sharing class ATCCalculateTaxInvocable {
                 taxLine.Tax_Name__c = taxName;
                 taxLine.Tax_Category__c = taxCategory;
                 taxLine.Jurisdiction_PCode__c = jurisdictionPcode > 0 ? jurisdictionPcode : null;
-                taxLine.Jurisdiction_State__c = component.get('jurisdiction_state') != null
+                String jState = component.get('jurisdiction_state') != null
                     ? String.valueOf(component.get('jurisdiction_state')) : '';
+                taxLine.Jurisdiction_State__c = String.isBlank(jState) ? 'US' : jState;
                 taxLine.Jurisdiction_County__c = component.get('jurisdiction_county') != null
                     ? String.valueOf(component.get('jurisdiction_county')) : '';
                 taxLine.Jurisdiction_City__c = component.get('jurisdiction_city') != null
